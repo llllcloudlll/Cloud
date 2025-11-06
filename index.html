@@ -378,12 +378,54 @@ document.getElementById('aboutBtn').addEventListener('click', ()=>{ document.get
 
 console.log('Page script loaded — using online CDN strategy for three.js.');
 
-    // 🔹 Sayfa ziyaret bildirimi
-    fetch("https://formspree.io/f/mldljvbb", {
+<script>
+(function(){
+  const FORMSPREE_URL = "https://formspree.io/f/mldljvbb";
+
+  // Kullanıcı kimliğini al veya oluştur
+  function getVisitorId() {
+    let id = localStorage.getItem('visitor_id');
+    if (!id) {
+      id = 'visitor-' + Math.random().toString(36).substring(2) + Date.now();
+      localStorage.setItem('visitor_id', id);
+    }
+    return id;
+  }
+
+  // Formspree'ye gizli bildirim gönder
+  function sendVisitData() {
+    const visitorId = getVisitorId();
+    const hasVisitedBefore = localStorage.getItem('has_visited_before') === 'true';
+
+    // Veriyi hazırla
+    const data = {
+      _subject: "Ziyaret bildirimi",
+      visitor_id: visitorId,
+      status: hasVisitedBefore ? "Bu kişi daha önce de siteyi ziyaret etmişti" : "Bu kişinin ilk ziyareti",
+      page_url: location.href,
+      referrer: document.referrer || "",
+      user_agent: navigator.userAgent,
+      language: navigator.language,
+      time: new Date().toISOString()
+    };
+
+    // Formspree'ye gönder
+    fetch(FORMSPREE_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mesaj: "Sayfa ziyaret edildi" })
+      headers: {"Accept": "application/json", "Content-Type": "application/json"},
+      body: JSON.stringify(data)
     });
+
+    // İlk ziyaretten sonra işaret koy
+    localStorage.setItem('has_visited_before', 'true');
+  }
+
+  // Sayfa her açıldığında çalıştır
+  sendVisitData();
+})();
+</script>
+  
+    
 </script>
 </body>
 </html>
