@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>İbrahim • Kişisel Site</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f1a;
+      --neon1:#7afcff;
+      --neon2:#ff6ec7;
+      --glass: rgba(255,255,255,0.04);
+      --accent: linear-gradient(90deg,var(--neon1),var(--neon2));
+      --font-sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 700px at 10% 10%, rgba(122,252,255,0.04), transparent), radial-gradient(900px 500px at 90% 90%, rgba(255,110,199,0.03), transparent), var(--bg); color:#e6eef8; font-family:var(--font-sans);}
+
+    /* Canvas full-bleed */
+    #bgCanvas{position:fixed;inset:0;z-index:0;display:block}
+
+    /* header */
+    header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--neon1),var(--neon2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 30px rgba(0,0,0,0.6),0 0 40px rgba(122,252,255,0.06) inset;transform:rotate(-12deg)}
+    .logo span{font-weight:800;font-size:12px;color:#071025;letter-spacing:1px}
+    .brand h1{margin:0;font-size:16px;font-weight:700}
+    .brand p{margin:0;font-size:12px;opacity:0.8}
+
+    /* menu button */
+    .menu-btn{position:relative;width:56px;height:48px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .hamburger{width:36px;height:20px;display:inline-block;position:relative}
+    .hamburger span{position:absolute;height:3px;width:100%;left:0;background:linear-gradient(90deg,var(--neon1),var(--neon2));border-radius:3px;transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .3s}
+    .hamburger span:nth-child(1){top:0}
+    .hamburger span:nth-child(2){top:8px}
+    .hamburger span:nth-child(3){top:16px}
+    .menu-open .hamburger span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+    .menu-open .hamburger span:nth-child(2){opacity:0}
+    .menu-open .hamburger span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+
+    /* fullscreen menu overlay */
+    .menu-overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.96),rgba(2,6,23,0.92));backdrop-filter:blur(6px);z-index:20;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s}
+    .menu-overlay.open{opacity:1;pointer-events:auto}
+    .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;max-width:1100px;width:100%;padding:48px}
+    .menu-panel{padding:28px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+    .menu-links{display:flex;flex-direction:column;gap:18px}
+    .menu-links a{font-size:28px;text-decoration:none;color:transparent;background:var(--accent);-webkit-background-clip:text;background-clip:text;font-weight:700}
+    .menu-meta{font-size:13px;color:#9fb3d4;line-height:1.6}
+
+    /* hero */
+    .hero{position:relative;min-height:78vh;display:flex;align-items:center;padding:40px 28px;z-index:5}
+    .hero-inner{display:flex;gap:28px;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+    .hero-left{flex:1}
+    .eyebrow{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#9fdfff;opacity:0.9}
+    h2.title{margin:10px 0 6px;font-size:44px;line-height:1.03}
+    .glitch{font-family:'Press Start 2P', monospace;display:inline-block;color:transparent;background:var(--accent);-webkit-background-clip:text;background-clip:text;position:relative}
+    .sub{color:#bcd2ef;opacity:0.9;margin-top:12px}
+
+    /* call to action */
+    .cta{margin-top:18px;display:flex;gap:12px}
+    .btn{padding:12px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700;backdrop-filter:blur(6px)}
+    .btn--primary{background:linear-gradient(90deg,var(--neon1),var(--neon2));color:#071025;box-shadow:0 8px 40px rgba(122,252,255,0.06)}
+    .btn--ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#d8ecff}
+
+    /* right card (floating) */
+    .card{width:380px;max-width:44vw;padding:20px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 20px 60px rgba(2,6,23,0.7);transform:translateY(-20px)}
+    .card h3{margin:0 0 6px}
+    .card p{margin:0;color:#9fb3d4}
+
+    /* footer */
+    footer{position:relative;z-index:10;padding:20px 28px;color:#8fa8ce;font-size:13px}
+
+    /* small & responsive tweaks */
+    @media (max-width:900px){
+      .menu-grid{grid-template-columns:1fr}
+      .hero-inner{flex-direction:column;align-items:flex-start}
+      .card{width:100%}
+      h2.title{font-size:32px}
+    }
+
+    /* small animated comic halftone texture overlay */
+    .dots{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0.06;background-image:radial-gradient(circle at 10px 10px, rgba(255,255,255,0.12) 0 2px, transparent 3px);background-size:20px 20px;z-index:2}
+
+    /* cursor sparkle */
+    .spark{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;mix-blend-mode:screen;transform:translate(-50%,-50%);z-index:30}
+
+    /* graceful fallback message */
+    .fallback-msg{position:fixed;left:12px;bottom:12px;background:rgba(0,0,0,0.6);padding:10px 14px;border-radius:10px;color:#cfe9ff;font-size:13px;z-index:40;display:none}
+
+    /* controls */
+    .controls{position:fixed;right:12px;bottom:12px;z-index:45;display:flex;gap:8px}
+    .controls button{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;color:#dbefff;cursor:pointer}
+  </style>
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+  <div class="dots"></div>
+
+  <header>
+    <div class="brand">
+      <div class="logo"><span>İB</span></div>
+      <div>
+        <h1>İbrahim Bulut</h1>
+        <p> kişisel alan</p>
+      </div>
+    </div>
+
+    <button class="menu-btn" id="menuBtn" aria-label="Menü">
+      <div class="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </button>
+  </header>
+
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <div class="menu-grid">
+      <div class="menu-panel">
+        <h2 style="margin-top:0">Gezinme</h2>
+        <nav class="menu-links">
+          <a href="#home" data-smooth>Hoşgeldin</a>
+          <a href="Yeniform.html">Anonim Olarak Mesaj Gönder</a>
+          <a href="#works" data-smooth>Projeler</a>
+          <a href="#about" data-smooth>Hakkında</a>
+          <a href="#contact" data-smooth>İletişim</a>
+        </nav>
+      </div>
+      <div class="menu-panel">
+        <h3>Hızlı Bilgiler</h3>
+        <p class="menu-meta">... &amp; ...</p>
+        <hr style="margin:16px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+        <p class="menu-meta">Kısayol: <kbd>Space</kbd> menüyü aç/kapat · <kbd>M</kbd> ses aç/kapat</p>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="eyebrow">WELCOME</div>
+          <h2 class="title">Merhaba, ben <span class="glitch" id="nameGlitch">İbrahim</span></h2>
+          <div class="sub" id="typedSub">...</div>
+
+          <div class="cta">
+            <button class="btn btn--primary" id="exploreBtn">Keşfet</button>
+            <button class="btn btn--ghost" id="aboutBtn">Hakkında</button>
+          </div>
+        </div>
+
+        <aside class="card" aria-hidden>
+          <h3>Bugün ne yapsak?</h3>
+          <p>Site, üç boyutlu hareketli arka plan, neon ışıklar ve çizgi roman hissi barındırır. Menüden bölümlere hızlıca ulaşabilirsin.</p>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <small style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02)">3D arkaplan</small>
+            <small style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02)">Animasyon</small>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- placeholder sections for anchors -->
+    <section id="works" style="padding:100px 28px;z-index:5;position:relative">
+      <div style="max-width:1100px;margin:0 auto;color:#cfe9ff">
+        <h2 style="margin-top:0">Projeler</h2>
+        <p>Projeleri buraya ekleyeceğiz ...</p>
+      </div>
+    </section>
+
+    <section id="about" style="padding:120px 28px;background:linear-gradient(180deg,transparent, rgba(255,255,255,0.01));z-index:5;position:relative">
+      <div style="max-width:1100px;margin:0 auto">
+        <h2>Hakkında</h2>
+        <p style="color:#bcd2ef">...</p>
+      </div>
+    </section>
+
+    <section id="contact" style="padding:100px 28px;z-index:5;position:relative">
+      <div style="max-width:1100px;margin:0 auto">
+        <h2>İletişim</h2>
+        <p style="color:#9fb3d4">...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>© <strong>İbrahim Bulut</strong> • Tüm hakları saklıdır.</div>
+      <div style="opacity:0.8">Made with neon & ...</div>
+    </div>
+  </footer>
+
+  <div class="spark" id="spark"></div>
+  <div class="fallback-msg" id="fallbackMsg">3D arka plan yüklenemedi — internet bağlantısını veya tarayıcı desteklerini kontrol et.</div>
+
+  <div class="controls">
+    <button id="audioToggle" title="Ses Aç/Kapat">Ses: Kapalı</button>
+    <button id="performanceBtn" title="Performans modu">Performans: Otomatik</button>
+  </div>
+
+  <script>
+    // ------------------- Utilities -------------------
+    const FALLBACK_MSG = document.getElementById('fallbackMsg');
+    function loadScript(src, timeout = 8000){
+      return new Promise((resolve, reject)=>{
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        let timed = false;
+        const t = setTimeout(()=>{ timed = true; s.onerror = s.onload = null; reject(new Error('timeout')); }, timeout);
+        s.onload = ()=>{ if(timed) return; clearTimeout(t); resolve(); };
+        s.onerror = ()=>{ if(timed) return; clearTimeout(t); reject(new Error('error')); };
+        document.head.appendChild(s);
+      });
+    }
+
+    // Attempt sequential CDN loads with fallback order
+    async function loadThreeWithFallback(){
+      const cdns = [
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js',
+        'https://unpkg.com/three@0.152.0/build/three.min.js'
+      ];
+      for(const url of cdns){
+        try{
+          await loadScript(url, 9000);
+          if(window.THREE) return true;
+        }catch(e){
+          console.warn('Failed to load three.js from', url, e);
+          // try next
+        }
+      }
+      return false;
+    }
+
+    // ------------------- Menu toggle -------------------
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    menuBtn.addEventListener('click', ()=>{ document.body.classList.toggle('menu-open'); menuOverlay.classList.toggle('open'); menuOverlay.setAttribute('aria-hidden', !menuOverlay.classList.contains('open')); });
+    window.addEventListener('keydown', (e)=>{ const active = document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName); if(!active && e.code === 'Space'){ e.preventDefault(); menuBtn.click(); } if(e.code === 'KeyM'){ toggleAudio(); } });
+
+    // smooth anchors
+    document.querySelectorAll('[data-smooth]').forEach(a=>{ a.addEventListener('click', (ev)=>{ ev.preventDefault(); const id = a.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}); document.body.classList.remove('menu-open'); menuOverlay.classList.remove('open'); }); });
+
+    // typed subtitle
+    const texts = ['3D • Neon • Çizgi roman • Anime','Kod, sanat ve hikaye birleşiyor','Sürreal deneyime hoş geldin'];
+    let ti = 0, char=0, dir=1; const typedEl = document.getElementById('typedSub');
+    function tick(){ const t = texts[ti]; typedEl.textContent = t.slice(0,char) + (char%2? '▏' : ''); char += dir; if(char>t.length){dir=-1;char=t.length;setTimeout(tick,900);return} if(char<0){dir=1;char=0;ti=(ti+1)%texts.length} setTimeout(tick,60 + Math.random()*40); } tick();
+
+    // cursor sparkle
+    const spark = document.getElementById('spark'); window.addEventListener('mousemove', (e)=>{ spark.style.left = e.clientX + 'px'; spark.style.top = e.clientY + 'px'; spark.style.boxShadow = '0 0 16px 6px rgba(122,252,255,0.12), 0 0 6px 2px rgba(255,110,199,0.06)'; spark.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(122,252,255,0.5) 40%, rgba(255,110,199,0.2) 70%)'; });
+
+    // ------------------- Audio (WebAudio oscillator ambient) -------------------
+    let audioCtx = null, masterGain = null, osc1 = null, osc2 = null, audioRunning = false;
+    const audioToggleBtn = document.getElementById('audioToggle');
+    function startAudio(){
+      if(audioRunning) return;
+      try{
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.06; masterGain.connect(audioCtx.destination);
+        osc1 = audioCtx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = 110;
+        osc2 = audioCtx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = 55;
+        const oscGain = audioCtx.createGain(); oscGain.gain.value = 0.5;
+        osc1.connect(oscGain); osc2.connect(oscGain); oscGain.connect(masterGain);
+        osc1.start(); osc2.start();
+        audioRunning = true; audioToggleBtn.textContent = 'Ses: Açık';
+      }catch(e){ console.warn('Audio start failed', e); }
+    }
+    function stopAudio(){ if(!audioRunning) return; try{ osc1.stop(); osc2.stop(); masterGain.disconnect(); audioCtx.close(); }catch(e){} audioRunning=false; audioToggleBtn.textContent='Ses: Kapalı'; }
+    function toggleAudio(){ if(!audioRunning) startAudio(); else stopAudio(); }
+    audioToggleBtn.addEventListener('click', toggleAudio);
+
+    // performance button placeholder (toggles reduced mode manually)
+    const performanceBtn = document.getElementById('performanceBtn');
+    let manualReduced = false;
+    performanceBtn.addEventListener('click', ()=>{ manualReduced = !manualReduced; performanceBtn.textContent = manualReduced? 'Performans: Azaltıldı' : 'Performans: Otomatik'; if(window._applyPerformanceMode) window._applyPerformanceMode(manualReduced); });
+
+    // ------------------- Fallback 2D canvas animation -------------------
+    function initCanvasFallback(opts={particleCount:80}){
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      window.addEventListener('resize', resize); resize();
+      let t0 = performance.now();
+      function loop(now){ const t = (now - t0)/1000; ctx.clearRect(0,0,canvas.width,canvas.height); const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height); g.addColorStop(0, 'rgba(122,252,255,0.04)'); g.addColorStop(1, 'rgba(255,110,199,0.02)'); ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=0;i<opts.particleCount;i++){ const x = (i*37 + t*60) % canvas.width; const y = (Math.sin(i*0.5 + t*0.7) * 0.4 + 0.5) * canvas.height; ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.arc(x,y,1.8,0,Math.PI*2); ctx.fill(); } requestAnimationFrame(loop); }
+      requestAnimationFrame(loop);
+    }
+
+    // ------------------- Three.js scene init with performance heuristics -------------------
+    async function initThreeScene(){
+      if(!window.THREE){ console.warn('THREE not available'); FALLBACK_MSG.style.display='block'; initCanvasFallback(); return; }
+      const THREE = window.THREE;
+
+      // perf heuristics
+      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+      const deviceMem = navigator.deviceMemory || 4;
+      let particleCount = isMobile || deviceMem <= 2 ? 180 : 600;
+      let icoDetail = isMobile || deviceMem <= 2 ? 0 : 2;
+      if(manualReduced){ particleCount = Math.min(particleCount, 160); icoDetail = Math.min(icoDetail, 0); }
+
+      // renderer
+      let renderer;
+      try{ renderer = new THREE.WebGLRenderer({canvas: document.getElementById('bgCanvas'), antialias:!isMobile, alpha:true}); }
+      catch(err){ console.warn('WebGLRenderer failed', err); FALLBACK_MSG.style.display='block'; initCanvasFallback(); return; }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 2000);
+      camera.position.z = 60;
+
+      // lights
+      const light1 = new THREE.PointLight(0x7afcff, 1.2, 300); light1.position.set(50,50,50); scene.add(light1);
+      const light2 = new THREE.PointLight(0xff6ec7, 0.9, 200); light2.position.set(-50,-30,60); scene.add(light2);
+
+      // icosahedron
+      const geom = new THREE.IcosahedronGeometry(12, icoDetail);
+      const mat = new THREE.MeshStandardMaterial({ color:0xffffff, metalness:0.1, roughness:0.35, emissive:0x112233, emissiveIntensity:0.6 });
+      const mesh = new THREE.Mesh(geom, mat); mesh.rotation.x = 0.4; scene.add(mesh);
+
+      // wireframe outline
+      const wire = new THREE.LineSegments(new THREE.WireframeGeometry(geom), new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.18})); scene.add(wire);
+
+      // particle field
+      const particleCountLocal = particleCount;
+      const pgeom = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCountLocal * 3);
+      for(let i=0;i<particleCountLocal;i++){ positions[i*3+0] = (Math.random()-0.5)*300; positions[i*3+1] = (Math.random()-0.5)*200; positions[i*3+2] = (Math.random()-0.5)*400; }
+      pgeom.setAttribute('position', new THREE.BufferAttribute(positions,3));
+      const pmaterial = new THREE.PointsMaterial({size: isMobile ? 1.1 : 1.6, transparent:true, opacity:0.95});
+      const points = new THREE.Points(pgeom, pmaterial); scene.add(points);
+
+      // parallax and mouse
+      const mouse = {x:0,y:0}; window.addEventListener('mousemove', (e)=>{ mouse.x = (e.clientX / window.innerWidth - 0.5) * 2; mouse.y = (e.clientY / window.innerHeight - 0.5) * 2; });
+
+      // animation loop
+      let tStart = performance.now();
+      function animate(now){
+        const t = (now - tStart)/1000;
+        mesh.rotation.y = t * 0.35; mesh.rotation.x = Math.sin(t*0.4)*0.25 + 0.4; wire.rotation.copy(mesh.rotation);
+        const pos = pgeom.attributes.position.array; for(let i=0;i<particleCountLocal;i++){ pos[i*3+2] += 0.08 * (0.3 + Math.sin((i+t*0.4)*0.13)); if(pos[i*3+2] > 220) pos[i*3+2] = -220; }
+        pgeom.attributes.position.needsUpdate = true;
+        camera.position.x += (mouse.x*30 - camera.position.x) * 0.02; camera.position.y += ( -mouse.y*20 - camera.position.y) * 0.02; camera.lookAt(0,0,0);
+        renderer.render(scene, camera); requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+
+      // resize
+      window.addEventListener('resize', ()=>{ renderer.setSize(window.innerWidth, window.innerHeight); camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); });
+
+
+// expose performance toggle handler
+window._applyPerformanceMode = (reduced)=>{ if(reduced){ /* reduce detail */ pgeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(Math.max(120, Math.floor(particleCountLocal/4)) * 3),3)); } else { /* no-op; full page reload recommended for full restore */ } };
+
+
+console.log('three.js scene initialized — particles:', particleCountLocal, 'ico detail:', icoDetail);
+}
+
+
+// ------------------- Bootstrap loader -------------------
+(async function bootstrap(){
+console.log('Attempting to load three.js from CDNs...');
+const ok = await loadThreeWithFallback();
+if(!ok){ console.error('Failed to load three.js from CDN list'); FALLBACK_MSG.style.display='block'; initCanvasFallback({particleCount:80}); return; }
+try{ await initThreeScene(); }catch(e){ console.error('Error during three scene init', e); FALLBACK_MSG.style.display='block'; initCanvasFallback({particleCount:80}); }
+})();
+
+
+// subtle name glitch for both modes
+(function(){ const nameEl = document.getElementById('nameGlitch'); setInterval(()=>{ if(!nameEl) return; nameEl.style.textShadow = `${Math.random()*12-6}px ${Math.random()*6-3}px ${4 + Math.random()*4}px rgba(122,252,255,0.06), ${Math.random()*12-6}px ${Math.random()*6-3}px ${4 + Math.random()*4}px rgba(255,110,199,0.04)`; },350); })();
+
+
+// hero buttons
+document.getElementById('exploreBtn').addEventListener('click', ()=>{ document.getElementById('works').scrollIntoView({behavior:'smooth'}); });
+document.getElementById('aboutBtn').addEventListener('click', ()=>{ document.getElementById('about').scrollIntoView({behavior:'smooth'}); });
+
+
+console.log('Page script loaded — using online CDN strategy for three.js.');
+
+    // 🔹 Sayfa ziyaret bildirimi
+    fetch("https://formspree.io/f/mldljvbb", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mesaj: "Sayfa ziyaret edildi" })
+    });
+</script>
+</body>
+</html>
+      
