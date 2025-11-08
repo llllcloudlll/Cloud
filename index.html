@@ -154,8 +154,8 @@
         </div>
 
         <aside class="card" aria-hidden>
-          <h3>Bugün ne yapsak?</h3>
-          <p>Site, üç boyutlu hareketli arka plan, neon ışıklar ve çizgi roman hissi barındırır. Menüden bölümlere hızlıca ulaşabilirsin.</p>
+          <h3> Naber </h3>
+          <p> Menüden bölümlere hızlıca ulaşabilirsin.</p>
           <div style="margin-top:12px;display:flex;gap:8px">
             <small style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02)">3D arkaplan</small>
             <small style="padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02)">Animasyon</small>
@@ -246,7 +246,7 @@
     document.querySelectorAll('[data-smooth]').forEach(a=>{ a.addEventListener('click', (ev)=>{ ev.preventDefault(); const id = a.getAttribute('href').slice(1); document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}); document.body.classList.remove('menu-open'); menuOverlay.classList.remove('open'); }); });
 
     // typed subtitle
-    const texts = ['3D • Neon • Çizgi roman • Anime','Kod, sanat ve hikaye birleşiyor','Sürreal deneyime hoş geldin'];
+    const texts = ['3D • Neon  • ','Kod, sanat ve hikaye birleşiyor','Sürreal deneyime hoş geldin'];
     let ti = 0, char=0, dir=1; const typedEl = document.getElementById('typedSub');
     function tick(){ const t = texts[ti]; typedEl.textContent = t.slice(0,char) + (char%2? '▏' : ''); char += dir; if(char>t.length){dir=-1;char=t.length;setTimeout(tick,900);return} if(char<0){dir=1;char=0;ti=(ti+1)%texts.length} setTimeout(tick,60 + Math.random()*40); } tick();
 
